@@ -31,4 +31,9 @@ public class UserController {
     public String makeEmployee(@PathVariable Long id) {
        return userService.makeEmployee(id);
     }
+
+    @PutMapping("/{id}/toggle-active")
+    public String toggleActive(@PathVariable Long id) {
+        return userService.toggleActive(id);
+    }
 }

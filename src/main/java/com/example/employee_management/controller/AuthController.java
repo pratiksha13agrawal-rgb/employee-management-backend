@@ -4,6 +4,8 @@ import com.example.employee_management.model.User;
 import com.example.employee_management.repository.UserRepository;
 import com.example.employee_management.utility.JwtUtil;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,15 +31,44 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody User user) {
-        User existing =userRepository.findByEmail(user.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<?> login(@RequestBody User user) {
+        try {
+            User existing = userRepository.findByEmail(user.getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if(!passwordEncoder.matches(user.getPassword(), existing.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            if(!passwordEncoder.matches(user.getPassword(), existing.getPassword())) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Invalid password"));
+            }
+
+            if(!existing.isActive()) {
+                return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Account deactivated! Contact admin."));
+            }
+
+            String token = jwtUtil.generateToken(existing.getEmail(), existing.getRole());
+            return ResponseEntity.ok(Map.of("token", token, "role", existing.getRole()));
+            
+        } catch(Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
         }
-
-        String token = jwtUtil.generateToken(existing.getEmail(), existing.getRole());
-        return Map.of("token", token, "role", existing.getRole());
     }
+
+    // @PostMapping("/login")
+    // public Map<String, String> login(@RequestBody User user) {
+    //     User existing =userRepository.findByEmail(user.getEmail())
+    //             .orElseThrow(() -> new RuntimeException("User not found"));
+
+    //     if(!passwordEncoder.matches(user.getPassword(), existing.getPassword())) {
+    //         throw new RuntimeException("Invalid password");
+    //     }
+
+    //     if(!existing.isActive()) {
+    //         throw new RuntimeException("Account deactivated! Contact admin.");
+    //     }
+
+    //     String token = jwtUtil.generateToken(existing.getEmail(), existing.getRole());
+    //     return Map.of("token", token, "role", existing.getRole());
+    // }
 }

@@ -43,4 +43,12 @@ public class UserService {
         return "User successfully converted to Employee!";
     }
 
+    public String toggleActive(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setActive(!user.isActive());
+        userRepository.save(user);
+        return user.isActive() ? "User activated!" : "User deactivated!";
+    }
+
 }

@@ -25,5 +25,5 @@ public class Employee {
     private double salary;
     private String role;
     private String joinDate;
-
+    private boolean actice = true;
 }
