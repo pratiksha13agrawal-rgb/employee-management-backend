@@ -54,21 +54,4 @@ public class AuthController {
                     .body(Map.of("message", e.getMessage()));
         }
     }
-
-    // @PostMapping("/login")
-    // public Map<String, String> login(@RequestBody User user) {
-    //     User existing =userRepository.findByEmail(user.getEmail())
-    //             .orElseThrow(() -> new RuntimeException("User not found"));
-
-    //     if(!passwordEncoder.matches(user.getPassword(), existing.getPassword())) {
-    //         throw new RuntimeException("Invalid password");
-    //     }
-
-    //     if(!existing.isActive()) {
-    //         throw new RuntimeException("Account deactivated! Contact admin.");
-    //     }
-
-    //     String token = jwtUtil.generateToken(existing.getEmail(), existing.getRole());
-    //     return Map.of("token", token, "role", existing.getRole());
-    // }
 }
