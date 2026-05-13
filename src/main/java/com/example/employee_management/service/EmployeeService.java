@@ -7,6 +7,9 @@ import com.example.employee_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +48,32 @@ public class EmployeeService {
     public Employee getByEmail(String email) {
         return employeeRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Employee not found"));
+    }
+
+    public Map<String, Object> bulkSave(List<Employee> employees) {
+       List<Employee> saved = new ArrayList<>();
+       List<String> skipped = new ArrayList<>();
+       
+       List<Employee> unique = employees.stream().collect(Collectors.toMap(Employee::getEmail, e-> e, (e1,e2) -> e1))
+        .values()
+        .stream()
+        .collect(Collectors.toList());
+
+       for(Employee emp: unique) {
+        emp.setId(null);
+        if(employeeRepository.findByEmail(emp.getEmail()).isPresent()) {
+            skipped.add(emp.getEmail());
+        } else {
+            saved.add(emp);
+        }
+       }
+
+       employeeRepository.saveAll(saved);
+       return Map.of(
+        "saved",saved.size(),
+        "skipped", skipped.size(),
+        "skippedEmails", skipped
+       );
     }
 
 }

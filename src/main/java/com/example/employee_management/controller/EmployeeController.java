@@ -2,10 +2,14 @@ package com.example.employee_management.controller;
 
 import com.example.employee_management.model.Employee;
 import com.example.employee_management.service.EmployeeService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
@@ -29,6 +33,7 @@ public class EmployeeController {
     public Employee save(@RequestBody Employee employee) {
         return employeeService.save(employee);
     }
+
     @PutMapping("/{id}")
     public Employee update(@PathVariable Long id, @RequestBody Employee employee) {
         return employeeService.update(id,employee);
@@ -42,6 +47,11 @@ public class EmployeeController {
    @GetMapping("/by-email/{email}")
    public Employee getByEmail(@PathVariable String email) {
        return employeeService.getByEmail(email);
+   }
+
+   @PostMapping("/bulk")
+   public Map<String, Object> bulkSave(@RequestBody @Valid List<Employee> employees) {
+       return employeeService.bulkSave(employees);
    }
    
 }
