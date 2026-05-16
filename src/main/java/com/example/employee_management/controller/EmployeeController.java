@@ -5,12 +5,12 @@ import com.example.employee_management.service.EmployeeService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("api/employees")
@@ -35,8 +35,14 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public Employee update(@PathVariable Long id, @RequestBody Employee employee) {
-        return employeeService.update(id,employee);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Employee employee) {
+        try {
+            Employee updated = employeeService.update(id, employee);
+            return ResponseEntity.ok(updated);
+        } catch(Exception e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("message", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
