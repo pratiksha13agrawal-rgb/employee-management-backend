@@ -76,4 +76,8 @@ public class EmployeeService {
        );
     }
 
+    public List<Employee> search(String query) {
+        return employeeRepository.search(query);
+    }
+
 }

@@ -59,5 +59,10 @@ public class EmployeeController {
    public Map<String, Object> bulkSave(@RequestBody @Valid List<Employee> employees) {
        return employeeService.bulkSave(employees);
    }
+
+   @GetMapping("/search")
+   public List<Employee> search(@RequestParam String query) {
+       return employeeService.search(query);
+   }
    
 }
